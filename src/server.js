@@ -1,7 +1,8 @@
 // BE
 
 import express from 'express';
-import WebSocket from 'ws';
+// import WebSocket from 'ws';
+import SocketIO from 'socket.io';
 import http from 'http';
 
 
@@ -25,8 +26,20 @@ app.get('/*', (req, res) => res.redirect('/'));
 const PORT = 3000;  // http & ws 는 같은 port 를 공유한다.
 const handleLiten = () => console.log(`Listening on http://localhost:${PORT}`);
 
-const server = http.createServer(app); // http server
-const wss = new WebSocket.Server({ server }); //ws server
+const httpServer = http.createServer(app); // http server
+const wsServer = SocketIO(httpServer);
+
+wsServer.on('connection', (socket) => {
+    socket.on('enter_room', (message, done) => {
+        console.log(message);
+        setTimeout(() => {
+            done();
+        }, 10000);
+    });
+});
+
+
+//const wss = new WebSocket.Server({ server }); //ws server
 
 /*
 - server 두개를 한 번에 돌릴 수 있게 설정 
@@ -36,13 +49,14 @@ const wss = new WebSocket.Server({ server }); //ws server
 - ws를 위해 server(http)위에 ws server를 따로 만들어줌
 */
 
+
 // 가상의 DB
-const sockets = [];
+//const sockets = [];
 /* 
 이렇게 설정하지 않으면 브라우저들끼리 연결이 안되고, 브라우저 각각 통신이 되기 때문에
 각기 다른 브라우저라도 하나로 통신하고 싶으면 배열로 저장
 */
-
+/*
 // 여기의 socket은 연결된 브라우저를 뜻함.
 wss.on("connection", (socket) => {
     sockets.push(socket);
@@ -69,5 +83,5 @@ wss.on("connection", (socket) => {
         };
     });
 });
-
-server.listen(PORT, handleLiten);
+*/
+httpServer.listen(PORT, handleLiten);
