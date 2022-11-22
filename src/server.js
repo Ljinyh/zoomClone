@@ -35,8 +35,16 @@ const wss = new WebSocket.Server({ server }); //ws server
 - ws를 위해 server(http)위에 ws server를 따로 만들어줌
 */
 
+// 가상의 DB
+const sockets = [];
+/* 
+이렇게 설정하지 않으면 브라우저들끼리 연결이 안되고, 브라우저 각각 통신이 되기 때문에
+각기 다른 브라우저라도 하나로 통신하고 싶으면 배열로 저장
+*/
+
 // 여기의 socket은 연결된 브라우저를 뜻함.
 wss.on("connection", (socket) => {
+    sockets.push(socket);
     console.log("Connected to Browser ✅");  // socket state = open 일 경우
 
     socket.on("close", () => { // socket state = close일 경우
@@ -44,10 +52,10 @@ wss.on("connection", (socket) => {
     });
 
     socket.on("message", (message) => {
-        console.log(message.toString('utf-8'));
+        sockets.forEach((aSocket) =>
+            // 연결된 모든 브라우저에게 받은 msg를 다시 돌려줌
+            aSocket.send(message.toString("utf-8")));
     });
-
-    socket.send("hello!");
 });
 
 server.listen(PORT, handleLiten);

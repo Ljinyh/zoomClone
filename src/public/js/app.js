@@ -1,5 +1,6 @@
 // FE
-
+const messageList = document.querySelector('ul');
+const messageForm = document.querySelector('form');
 // ws connect
 const socket = new WebSocket(`ws://${window.location.host}`);
 /* 
@@ -20,7 +21,11 @@ socket.addEventListener("close", () => { //Server is offline
     console.log("Discnnected to Server ❌");
 });
 
-// 메세지를 보내기까지 10초를 기다림.
-setTimeout(() => {
-    socket.send("hello from the browser");
-}, 10000);
+function handleSubmit(event) {
+    event.preventDefault();
+    const input = messageForm.querySelector("input");
+    socket.send(input.value);  // server 로 input 값을 보내줌
+    input.value = "";  //보낸 뒤 input 값 초기화
+}
+
+messageForm.addEventListener("submit", handleSubmit);
