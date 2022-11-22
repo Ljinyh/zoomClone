@@ -4,6 +4,7 @@ import express from 'express';
 import WebSocket from 'ws';
 import http from 'http';
 
+
 const app = express();
 
 // view engine 을 pug로 set
@@ -45,16 +46,27 @@ const sockets = [];
 // 여기의 socket은 연결된 브라우저를 뜻함.
 wss.on("connection", (socket) => {
     sockets.push(socket);
+    socket["nickname"] = "Anonymous"; // 만약 user가 nickname을 설정하지 않는다면 디폴트는 anonymous(익명)이다.
     console.log("Connected to Browser ✅");  // socket state = open 일 경우
 
     socket.on("close", () => { // socket state = close일 경우
         console.log("Discnnected to Browser ❌");
     });
 
-    socket.on("message", (message) => {
-        sockets.forEach((aSocket) =>
-            // 연결된 모든 브라우저에게 받은 msg를 다시 돌려줌
-            aSocket.send(message.toString("utf-8")));
+    socket.on("message", (msg) => {
+        const message = JSON.parse(msg.toString());
+        switch (message.type) {
+            case "new_message":
+                sockets.forEach((aSocket) =>
+                    // 연결된 모든 브라우저에게 받은 msg를 다시 돌려줌
+                    aSocket.send(`${socket.nickname}: ${message.payload}`));
+                break;
+            case "nickname":
+                // socket = object type, so insert new item
+                socket["nickname"] = message.payload;
+                // { nickname : message.payload }
+                break;
+        };
     });
 });
 
