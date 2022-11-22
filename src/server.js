@@ -29,14 +29,28 @@ const handleLiten = () => console.log(`Listening on http://localhost:${PORT}`);
 const httpServer = http.createServer(app); // http server
 const wsServer = SocketIO(httpServer);
 
+// socket
 wsServer.on('connection', (socket) => {
     socket.onAny((event) => {
         console.log(`Socket Event:${event}`);
     });
+
+    // someone joined
     socket.on('enter_room', (roomName, done) => {
         socket.join(roomName); // roomName에 맞는 room 생성
         done();
         socket.to(roomName).emit('welcome'); // 처음엔 나오지 않고 입장 후 다른 누군가 입장했을때 그 방에 있는 모두에게 발동
+    });
+
+    // someone lefted
+    socket.on("disconnecting", () => {
+        socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+    });
+
+    // mesage
+    socket.on('new_message', (msg, room, done) => {
+        socket.to(room).emit('new_message', msg);
+        done();
     });
 });
 
