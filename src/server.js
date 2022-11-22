@@ -35,4 +35,19 @@ const wss = new WebSocket.Server({ server }); //ws server
 - ws를 위해 server(http)위에 ws server를 따로 만들어줌
 */
 
+// 여기의 socket은 연결된 브라우저를 뜻함.
+wss.on("connection", (socket) => {
+    console.log("Connected to Browser ✅");  // socket state = open 일 경우
+
+    socket.on("close", () => { // socket state = close일 경우
+        console.log("Discnnected to Browser ❌");
+    });
+
+    socket.on("message", (message) => {
+        console.log(message.toString('utf-8'));
+    });
+
+    socket.send("hello!");
+});
+
 server.listen(PORT, handleLiten);
