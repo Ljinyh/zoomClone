@@ -30,11 +30,13 @@ const httpServer = http.createServer(app); // http server
 const wsServer = SocketIO(httpServer);
 
 wsServer.on('connection', (socket) => {
+    socket.onAny((event) => {
+        console.log(`Socket Event:${event}`);
+    });
     socket.on('enter_room', (roomName, done) => {
-        console.log(roomName);
-        setTimeout(() => {
-            done("Done!");
-        }, 10000);
+        socket.join(roomName); // roomName에 맞는 room 생성
+        done();
+        socket.to(roomName).emit('welcome'); // 처음엔 나오지 않고 입장 후 다른 누군가 입장했을때 그 방에 있는 모두에게 발동
     });
 });
 
