@@ -7,16 +7,17 @@ html(lang="en")
         title ZoomClone
         link(rel="stylesheet", href="https://unpkg.com/mvp.css@1.12/mvp.css")
     body 
-        header 
+        header
             h1 Clone - Zoom
         main
             div#roomName
                 form
-                    input#nickname(placeholder="nickname", required, type="text")
+                    input#name(placeholder="nickname", required, type="text")
                     input#roomName(placeholder="room name", required, type="text")
                     button Enter Room
             div#message  
                 h3
+                h5
                 ul
                 form#message
                     input(placeholder="message", required, type="text")

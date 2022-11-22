@@ -40,7 +40,7 @@ wsServer.on('connection', (socket) => {
     socket.on('enter_room', (roomName, nickname, done) => {
         socket.join(roomName); // roomName에 맞는 room 생성
         socket["nickname"] = nickname;
-        done();
+        done(socket.nickname);
         socket.to(roomName).emit('welcome', socket.nickname); // 처음엔 나오지 않고 입장 후 다른 누군가 입장했을때 그 방에 있는 모두에게 발동
     });
 
@@ -53,12 +53,6 @@ wsServer.on('connection', (socket) => {
     socket.on('new_message', (msg, room, done) => {
         socket.to(room).emit('new_message', `${socket.nickname}: ${msg}`);
         done();
-    });
-
-    // nickname
-    socket.on('nickname', (nickname) => {
-        console.log(nickname);
-        socket["nickname"] = nickname;
     });
 });
 

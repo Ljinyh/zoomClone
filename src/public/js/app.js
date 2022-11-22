@@ -22,11 +22,13 @@ function handleMessageSubmit(event) {
 };
 
 // hidden div changed fn
-function showRoom() {
+function showRoom(nickname) {
     roomNameDiv.hidden = true; // 
     messageDiv.hidden = false; //room div를 숨기지 않음
-    const h3 = messageDiv.querySelector('h3');
-    h3.innerText = `Room ${roomName}`; //설정된 roomName을 위에 보여줌.
+    const messageH3 = messageDiv.querySelector('h3');
+    messageH3.innerText = `RoomName:  ${roomName}`; //설정된 roomName을 위에 보여줌.
+    const myNickname = messageDiv.querySelector('h5');
+    myNickname.innerText = `my nickname: ${nickname}`;
     const messageForm = messageDiv.querySelector('#message');
     messageForm.addEventListener('submit', handleMessageSubmit);
 };
@@ -43,7 +45,7 @@ function addMessage(message) {
 function handleSubmit(event) {
     event.preventDefault();
     const roomNameInput = form.querySelector('#roomName');
-    const nicknameInput = form.querySelector('#nickname');
+    const nicknameInput = form.querySelector('#name');
     socket.emit('enter_room', roomNameInput.value, nicknameInput.value, showRoom
     );
     roomName = roomNameInput.value;
