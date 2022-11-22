@@ -30,10 +30,10 @@ const httpServer = http.createServer(app); // http server
 const wsServer = SocketIO(httpServer);
 
 wsServer.on('connection', (socket) => {
-    socket.on('enter_room', (message, done) => {
-        console.log(message);
+    socket.on('enter_room', (roomName, done) => {
+        console.log(roomName);
         setTimeout(() => {
-            done();
+            done("Done!");
         }, 10000);
     });
 });
@@ -62,11 +62,11 @@ wss.on("connection", (socket) => {
     sockets.push(socket);
     socket["nickname"] = "Anonymous"; // 만약 user가 nickname을 설정하지 않는다면 디폴트는 anonymous(익명)이다.
     console.log("Connected to Browser ✅");  // socket state = open 일 경우
-
+ 
     socket.on("close", () => { // socket state = close일 경우
         console.log("Discnnected to Browser ❌");
     });
-
+ 
     socket.on("message", (msg) => {
         const message = JSON.parse(msg.toString());
         switch (message.type) {
