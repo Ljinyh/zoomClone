@@ -31,26 +31,34 @@ const wsServer = SocketIO(httpServer);
 
 // socket
 wsServer.on('connection', (socket) => {
+    socket["nickname"] = "Anonymous";
     socket.onAny((event) => {
         console.log(`Socket Event:${event}`);
     });
 
     // someone joined
-    socket.on('enter_room', (roomName, done) => {
+    socket.on('enter_room', (roomName, nickname, done) => {
         socket.join(roomName); // roomName에 맞는 room 생성
+        socket["nickname"] = nickname;
         done();
-        socket.to(roomName).emit('welcome'); // 처음엔 나오지 않고 입장 후 다른 누군가 입장했을때 그 방에 있는 모두에게 발동
+        socket.to(roomName).emit('welcome', socket.nickname); // 처음엔 나오지 않고 입장 후 다른 누군가 입장했을때 그 방에 있는 모두에게 발동
     });
 
     // someone lefted
     socket.on("disconnecting", () => {
-        socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname));
     });
 
     // mesage
     socket.on('new_message', (msg, room, done) => {
-        socket.to(room).emit('new_message', msg);
+        socket.to(room).emit('new_message', `${socket.nickname}: ${msg}`);
         done();
+    });
+
+    // nickname
+    socket.on('nickname', (nickname) => {
+        console.log(nickname);
+        socket["nickname"] = nickname;
     });
 });
 
